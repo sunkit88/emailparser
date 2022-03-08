@@ -26,6 +26,8 @@ dvd_list = []
 # text_list = []
 date_list = []
 
+noneed = ["vr", "dmlk", "jdxa", "glod", "_"]
+
 # Iterate through every email
 for i, _ in enumerate(email_list):
 
@@ -54,15 +56,22 @@ df = df_raw.copy()
 
 
 df['dvd'] = df['dvd'].astype(str).str.split("/").str.get(-1)
-# df['dvd'] = df['dvd'].astype(str).str.split(".").str.get(0)
-# df[['left','right']] = df['dvd'].astype(str).str.split('00', n=1, expand=True)
-# result = df['iso'].str.split('(\d+)([A-Za-z]+)', expand=True)
-df1 = df['dvd'].str.split(r'([A-Za-z]+)(\d+)(\w+)', expand=True)
-df1 = df1.dropna()
-df1['num']=df1[2].apply(lambda x: x[-3:] if len(x)>3 else x)
-df['dvd'] = df1[1].astype(str) + " " + df1['num'].astype(str)
+print(df)
+df1 =pd.DataFrame()
+df1['name'] = df['dvd'].replace(r'\D+$', r'', regex=True)
+df1['name'] = df1['name'].replace(r'^\d+', r'', regex=True)
+df1 = df1[~df1["name"].str.contains('|'.join(noneed))]
+df1 = df1[df1['name'].str.strip().astype(bool)]
+# df1[0] = df1[0].apply(lambda x: str(x)[:-1] if str.endswith(r'[A-Za-z]?'))
+df1 = df1['name'].str.split(r'(\d+$)', expand=True)
+print(df1)
+
+
+
+df1['num']=df1[1].apply(lambda x: x[-3:] if len(x)>3 else x)
+df['dvd'] = df1[0].astype(str) + " " + df1['num'].astype(str)
 df = df.dropna()
-df = df[~df["dvd"].str.contains("vr")]
+# df = df[~df["dvd"].str.contains("vr")]
 df = df.sort_values('date', ascending=True)
 df_new = df.drop_duplicates(subset = "dvd")
 df_new = pd.concat([df_import,df_new],ignore_index=True)
