@@ -26,7 +26,7 @@ dvd_list = []
 # text_list = []
 date_list = []
 
-noneed = ["vr", "dmlk", "jdxa", "glod", "_"]
+noneed = ["vr", "dmlk", "jdxa", "glod", "_", "sweets"]
 
 # Iterate through every email
 for i, _ in enumerate(email_list):
